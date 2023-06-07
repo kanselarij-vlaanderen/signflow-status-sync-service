@@ -1,10 +1,10 @@
 DELETE {
-  GRAPH ${sparqlEscapeUri(SIGNFLOW_GRAPH)} {
+  GRAPH <http://mu.semte.ch/graphs/system/signing> {
     ?signflow <http://www.w3.org/ns/adms#status> ?oldStatus .
   }
 }
 INSERT {
-  GRAPH ${sparqlEscapeUri(SIGNFLOW_GRAPH)} {
+  GRAPH <http://mu.semte.ch/graphs/system/signing> {
     ?signflow <http://www.w3.org/ns/adms#status> ?newStatus .
   }
 }
