@@ -27,7 +27,7 @@ app.post('/delta', bodyParser.json(), async (req, res) => {
     console.log(`Received deltas for ${pathUpdates.length} activities that might imply a change in status for their signflow.`);
   }
   for (const d of pathUpdates) {
-    const signSubcaseUri = d.subject.value;
+    const signSubcaseUri = d.object.value;
     await syncStatusForSignSubcase(signSubcaseUri);
   }
 });
