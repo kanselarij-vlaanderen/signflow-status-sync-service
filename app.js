@@ -2,8 +2,9 @@ import { app, errorHandler } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as deltaUtil from './lib/delta-util';
-import { SUBCASE_ACTIVITY_PREDICATES } from './config';
+import { ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './config';
 import { syncStatusForSignSubcase } from './lib/status-sync-util';
+import { fetchSignSubcaseUri } from './lib/fetch-subcase';
 
 app.post('/delta', bodyParser.json(), async (req, res) => {
   res.status(202).end();
@@ -22,13 +23,28 @@ app.post('/delta', bodyParser.json(), async (req, res) => {
       updateablePredicates.push(SUBCASE_ACTIVITY_PREDICATES[predicate]);
     }
   }
+  for (const predicate in ACTIVITY_PREDICATES) {
+    if (ACTIVITY_PREDICATES.hasOwnProperty(predicate)) {
+      updateablePredicates.push(ACTIVITY_PREDICATES[predicate]);
+    }
+  }
   const pathUpdates = deltaUtil.filterByPredicate(insertionDeltas, updateablePredicates);
   if (pathUpdates.length) {
     console.log(`Received deltas for ${pathUpdates.length} activities that might imply a change in status for their signflow.`);
   }
   for (const d of pathUpdates) {
-    const signSubcaseUri = d.object.value;
-    await syncStatusForSignSubcase(signSubcaseUri);
+    let signSubcaseUri;
+
+    const predicate = d.predicate.value;
+    if (Object.values(SUBCASE_ACTIVITY_PREDICATES).includes(predicate)) {
+      signSubcaseUri = d.object.value;
+    } else {
+      signSubcaseUri = await fetchSignSubcaseUri(d.subject.value);
+    }
+
+    if (signSubcaseUri) {
+      await syncStatusForSignSubcase(signSubcaseUri);
+    }
   }
 });
 

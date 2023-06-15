@@ -11,6 +11,8 @@ const SIGNFLOW_STATUSES = {
 const SIGN_FLOW_TYPE = "http://mu.semte.ch/vocabularies/ext/handtekenen/Handtekenaangelegenheid";
 const SIGN_FLOW_SUBCASE_PREDICATE = "http://mu.semte.ch/vocabularies/ext/handtekenen/doorlooptHandtekening";
 const STATUS_PREDICATE = "http://www.w3.org/ns/adms#status";
+const SIGNING_ACTIVITY_TYPE = "http://mu.semte.ch/vocabularies/ext/handtekenen/Handtekenactiviteit";
+const APPROVAL_ACTIVITY_TYPE = "http://mu.semte.ch/vocabularies/ext/handtekenen/Goedkeuringsactiviteit";
 
 const SUBCASE_ACTIVITY_PREDICATES = {
   MARKING_ACTIVITY: "http://mu.semte.ch/vocabularies/ext/handtekenen/markeringVindtPlaatsTijdens",
@@ -22,11 +24,18 @@ const SUBCASE_ACTIVITY_PREDICATES = {
   COMPLETION_ACTIVITY: "http://mu.semte.ch/vocabularies/ext/handtekenen/afrondingVindtPlaatsTijdens"
 };
 
+const ACTIVITY_PREDICATES = {
+  START_DATE: "https://data.vlaanderen.be/ns/dossier#Activiteit.startdatum",
+};
+
 module.exports = {
   SIGNFLOW_GRAPH,
   SIGNFLOW_STATUSES,
   SIGN_FLOW_TYPE,
   SIGN_FLOW_SUBCASE_PREDICATE,
   STATUS_PREDICATE,
-  SUBCASE_ACTIVITY_PREDICATES
+  SUBCASE_ACTIVITY_PREDICATES,
+  ACTIVITY_PREDICATES,
+  SIGNING_ACTIVITY_TYPE,
+  APPROVAL_ACTIVITY_TYPE,
 };
