@@ -12,7 +12,7 @@ Use the following in docker-compose.yml
 
 ```
   signflow-status-sync:
-    image: kanselarij/signflow-status-sync-service:0.0.3
+    image: kanselarij/signflow-status-sync-service:0.0.5
     restart: always
 ```
 
