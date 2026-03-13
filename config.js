@@ -1,3 +1,5 @@
+const ALLOWED_DELTA_SIZE = process.env.ALLOWED_DELTA_SIZE || '100mb';
+
 const SIGNFLOW_GRAPH = 'http://mu.semte.ch/graphs/system/signing';
 const SIGNFLOW_STATUSES = {
   MARKED: 'http://themis.vlaanderen.be/id/handtekenstatus/f6a60072-0537-11ee-bb35-ee395168dcf7',
@@ -29,6 +31,7 @@ const ACTIVITY_PREDICATES = {
 };
 
 module.exports = {
+  ALLOWED_DELTA_SIZE,
   SIGNFLOW_GRAPH,
   SIGNFLOW_STATUSES,
   SIGN_FLOW_TYPE,
