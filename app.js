@@ -3,8 +3,22 @@ import bodyParser from 'body-parser';
 
 import * as deltaUtil from './lib/delta-util';
 import { ALLOWED_DELTA_SIZE, ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './config';
-import { syncStatusForSignSubcase } from './lib/status-sync-util';
+import { syncStatusForSignSubcase, syncAllSignflowStatuses } from './lib/status-sync-util';
 import { fetchSignSubcaseUri } from './lib/fetch-subcase';
+
+app.post('/run', async (req, res, next) => {
+  try {
+    console.log('Running signflow status sync for all signflows...');
+    const count = await syncAllSignflowStatuses();
+    console.log(`Signflow status sync completed successfully. Synced ${count} signflow(s).`);
+    return res.status(200).send({ message: `Signflow status sync completed successfully. Synced ${count} signflow(s).` });
+  } catch (err) {
+    console.trace(err);
+    const error = new Error(err.message || 'Something went wrong while running signflow status sync.');
+    error.status = 500;
+    return next(error);
+  }
+});
 
 app.post('/delta', bodyParser.json({ limit: ALLOWED_DELTA_SIZE }), async (req, res) => {
   res.status(202).end();
