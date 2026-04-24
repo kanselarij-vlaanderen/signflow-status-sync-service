@@ -12,8 +12,8 @@ const CRON_PATTERN = process.env.CRON_PATTERN || '0 0 * * *';
 cron.schedule(CRON_PATTERN, async () => {
   try {
     console.log(`[cron] Running signflow status sync (pattern: ${CRON_PATTERN})...`);
-    const drifted = await syncAllSignflowStatuses();
-    console.log(`[cron] Signflow status sync completed. Corrected ${drifted.length} drifted signflow(s).`);
+    await syncAllSignflowStatuses();
+    console.log('[cron] Signflow status sync completed.');
   } catch (err) {
     console.trace(err);
   }
@@ -22,13 +22,9 @@ cron.schedule(CRON_PATTERN, async () => {
 app.post('/run', async (req, res, next) => {
   try {
     console.log('Running signflow status sync...');
-    const drifted = await syncAllSignflowStatuses();
-    console.log(`Signflow status sync completed. Corrected ${drifted.length} drifted signflow(s).`);
-    return res.status(200).send({
-      message: `Signflow status sync completed. Corrected ${drifted.length} drifted signflow(s).`,
-      drifted: drifted.length,
-      changes: drifted,
-    });
+    await syncAllSignflowStatuses();
+    console.log('Signflow status sync completed.');
+    return res.status(200).send({ message: 'Signflow status sync completed.' });
   } catch (err) {
     console.trace(err);
     const error = new Error(err.message || 'Something went wrong while running signflow status sync.');
