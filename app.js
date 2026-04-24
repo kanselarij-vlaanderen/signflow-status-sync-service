@@ -1,12 +1,40 @@
 import { app, errorHandler } from 'mu';
 import bodyParser from 'body-parser';
+import cron from 'node-cron';
 
 import * as deltaUtil from './lib/delta-util';
 import { ALLOWED_DELTA_SIZE, ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './config';
-import { syncStatusForSignSubcase } from './lib/status-sync-util';
+import { syncStatusForSignSubcase, syncAllSignflowStatuses } from './lib/status-sync-util';
 import { fetchSignSubcaseUri } from './lib/fetch-subcase';
 
+const CRON_PATTERN = process.env.CRON_PATTERN || '0 0 * * *';
+
+cron.schedule(CRON_PATTERN, async () => {
+  try {
+    console.log(`[cron] Running signflow status sync (pattern: ${CRON_PATTERN})...`);
+    await syncAllSignflowStatuses();
+    console.log('[cron] Signflow status sync completed.');
+  } catch (err) {
+    console.trace(err);
+  }
+});
+
+app.post('/run', async (req, res, next) => {
+  try {
+    console.log('Running signflow status sync...');
+    await syncAllSignflowStatuses();
+    console.log('Signflow status sync completed.');
+    return res.status(200).send({ message: 'Signflow status sync completed.' });
+  } catch (err) {
+    console.trace(err);
+    const error = new Error(err.message || 'Something went wrong while running signflow status sync.');
+    error.status = 500;
+    return next(error);
+  }
+});
+
 app.post('/delta', bodyParser.json({ limit: ALLOWED_DELTA_SIZE }), async (req, res) => {
+  console.log(req)
   res.status(202).end();
   const insertionDeltas = deltaUtil.insertionDeltas(req.body);
   const deletionDeltas = deltaUtil.deletionDeltas(req.body);
