@@ -1,10 +1,46 @@
 import { app, errorHandler } from 'mu';
 import bodyParser from 'body-parser';
+import cron from 'node-cron';
 
 import * as deltaUtil from './lib/delta-util';
 import { ALLOWED_DELTA_SIZE, ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './config';
-import { syncStatusForSignSubcase } from './lib/status-sync-util';
+import { syncStatusForSignSubcase, outOfSyncSignSubcases } from './lib/status-sync-util';
 import { fetchSignSubcaseUri } from './lib/fetch-subcase';
+
+const CRON_PATTERN = process.env.CRON_PATTERN || '0 0 * * *';
+
+async function syncOutOfSyncSignflowStatuses () {
+  const signSubcaseUris = await outOfSyncSignSubcases();
+  console.log(`Found ${signSubcaseUris.length} signflows with a status out of sync with their activities`);
+  for (const uri of signSubcaseUris) {
+    await syncStatusForSignSubcase(uri);
+  }
+  return signSubcaseUris.length;
+}
+
+cron.schedule(CRON_PATTERN, async () => {
+  try {
+    console.log(`[cron] Running signflow status sync (pattern: ${CRON_PATTERN})...`);
+    await syncOutOfSyncSignflowStatuses();
+    console.log('[cron] Signflow status sync completed.');
+  } catch (err) {
+    console.trace(err);
+  }
+});
+
+app.post('/run', async (req, res, next) => {
+  try {
+    console.log('Running signflow status sync...');
+    const count = await syncOutOfSyncSignflowStatuses();
+    console.log('Signflow status sync completed.');
+    return res.status(200).send({ message: `Signflow status sync completed. Synced ${count} signflows.` });
+  } catch (err) {
+    console.trace(err);
+    const error = new Error(err.message || 'Something went wrong while running signflow status sync.');
+    error.status = 500;
+    return next(error);
+  }
+});
 
 app.post('/delta', bodyParser.json({ limit: ALLOWED_DELTA_SIZE }), async (req, res) => {
   res.status(202).end();

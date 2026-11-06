@@ -16,6 +16,13 @@ Use the following in docker-compose.yml
     restart: always
 ```
 
+The following environment variables can be configured:
+
+| Name                 | Description                                                                 | Default     |
+|----------------------|-----------------------------------------------------------------------------|-------------|
+| `ALLOWED_DELTA_SIZE` | Maximum size of an incoming delta message body                              | `100mb`     |
+| `CRON_PATTERN`       | Cron pattern for the periodic repair of out-of-sync signflow statuses (see `POST /run`) | `0 0 * * *` |
+
 When deploying this on an existing stack, run `one-off-migrations/sync-signing-statuses.sparql` once.
 
 Use following snippet in delta-notifier config:
@@ -146,3 +153,14 @@ Use following snippet in delta-notifier config:
 #### POST /delta
 
 Internal endpoint for receiving deltas from the [delta-notifier](https://github.com/mu-semtech/delta-notifier)
+
+#### POST /run
+
+Repairs signflow statuses that got out of sync, e.g. because deltas were lost or not received by the service, or because an activity was removed (deletions are not handled by `/delta`). The service derives the expected status of every signflow from the activities on its sign subcase, and runs the same sync as for an incoming delta for only the signflows that have no status or another status than the expected one. Signflows that are already in sync are not touched.
+
+The same repair runs periodically in the background according to `CRON_PATTERN`.
+
+Responds with `200` once the sync has finished:
+```json
+{ "message": "Signflow status sync completed. Synced 3 signflows." }
+```
