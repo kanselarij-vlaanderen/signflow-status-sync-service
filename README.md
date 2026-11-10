@@ -14,6 +14,8 @@ Use the following in docker-compose.yml
   signflow-status-sync:
     image: kanselarij/signflow-status-sync-service:0.0.5
     restart: always
+    environment:
+      ALLOW_MU_AUTH_SUDO: "true"
 ```
 
 When deploying this on an existing stack, run `one-off-migrations/sync-signing-statuses.sparql` once.

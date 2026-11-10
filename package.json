@@ -3,11 +3,9 @@
   "version": "0.0.5",
   "description": "Microservice to keep the status of signflows up to date when adding activities",
   "dependencies": {
-    "@lblod/mu-auth-sudo": "^0.6.1",
     "body-parser": "^1.19.0",
     "lodash.groupby": "^4.6.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
