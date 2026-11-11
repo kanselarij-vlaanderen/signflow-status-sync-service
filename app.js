@@ -2,7 +2,7 @@ import { app, errorHandler } from 'mu';
 import bodyParser from 'body-parser';
 
 import * as deltaUtil from './lib/delta-util';
-import { ALLOWED_DELTA_SIZE, ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './config';
+import { ALLOWED_DELTA_SIZE, ACTIVITY_PREDICATES, SUBCASE_ACTIVITY_PREDICATES } from './constants';
 import { syncStatusForSignSubcase } from './lib/status-sync-util';
 import { fetchSignSubcaseUri } from './lib/fetch-subcase';
 

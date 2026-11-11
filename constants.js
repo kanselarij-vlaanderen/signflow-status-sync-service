@@ -30,7 +30,7 @@ const ACTIVITY_PREDICATES = {
   START_DATE: "https://data.vlaanderen.be/ns/dossier#Activiteit.startdatum",
 };
 
-module.exports = {
+export {
   ALLOWED_DELTA_SIZE,
   SIGNFLOW_GRAPH,
   SIGNFLOW_STATUSES,
